@@ -1,5 +1,12 @@
 ﻿{
   "WebAPI": {
 
+  },
+  "RabbitMQ": {
+    "Host": "主机地址",
+    "VirtualHost": "/",
+    "Port": 5672,
+    "UserName": "admin",
+    "Password": "admin"
   }
 }
