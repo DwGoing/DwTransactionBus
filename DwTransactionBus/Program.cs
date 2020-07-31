@@ -19,6 +19,7 @@ namespace DwTransactionBus
                 host.InitService(provider => provider.InitWebAPIServiceAsync<Startup>());
                 host.RegisterRabbitMQService();
                 host.Run();
+                // test
             }
             catch (Exception ex)
             {
