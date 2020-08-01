@@ -1,21 +1,13 @@
 ﻿using System;
 using System.Linq;
 
-using DwFramework.Core.Plugins;
-
 namespace DwTransactionBus
 {
     public class Transaction
     {
-        public readonly string Id;
-        public readonly DateTime CreateTime;
+        public string Id { get; set; }
+        public DateTime CreateTime { get; set; }
         public Operation[] Operations { get; set; }
-
-        public Transaction()
-        {
-            Id = Generater.GenerateGUID().ToString();
-            CreateTime = DateTime.Now;
-        }
 
         public void FinishOperation(string operationId)
         {
