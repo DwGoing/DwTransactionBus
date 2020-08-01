@@ -1,11 +1,60 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Linq;
+
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
+using DwFramework.Core;
+using DwFramework.Core.Extensions;
+using DwFramework.WebAPI.Plugins;
+using Microsoft.Extensions.Hosting;
 
 namespace DwTransactionBus
 {
     public class Startup
     {
+        private readonly ILogger<Startup> _logger;
+
         public Startup()
         {
+            _logger = ServiceHost.Provider.GetLogger<Startup>();
+        }
+
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddControllers();
+            services.AddSwagger("TransactionBusDoc", "事务总线", "v1");
+        }
+
+        public void Configure(IApplicationBuilder app, IHostApplicationLifetime lifetime)
+        {
+            app.UseRouting();
+            app.UseSwagger("TransactionBusDoc", "TransactionBusDoc v1");
+            app.UseRequestFilter(new Dictionary<string, Action<HttpContext>>
+            {
+                {"/*",context =>{
+                    // 请求日志
+                    _logger.LogDebug($"接收到请求:{context.Request.Path} ({GetIP(context)})");
+                }}
+            });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+        }
+
+        private string GetIP(HttpContext context)
+        {
+            var ip = context.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+            if (!string.IsNullOrEmpty(ip))
+                ip = IPAddress.Parse(ip).MapToIPv4().ToString();
+            if (string.IsNullOrEmpty(ip))
+                ip = context.Connection.RemoteIpAddress.MapToIPv4().ToString();
+            return ip;
         }
     }
 }

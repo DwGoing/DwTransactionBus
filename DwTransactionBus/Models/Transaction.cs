@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 
 using DwFramework.Core.Plugins;
 
@@ -15,6 +15,17 @@ namespace DwTransactionBus
         {
             Id = Generater.GenerateGUID().ToString();
             CreateTime = DateTime.Now;
+        }
+
+        public void FinishOperation(string operationId)
+        {
+            var operation = Operations.Where(item => item.Id == operationId).SingleOrDefault();
+            if (operation != null) operation.IsFinished = true;
+        }
+
+        public bool IsFinished()
+        {
+            return !Operations.Where(item => item.IsFinished == false).Any();
         }
     }
 }
